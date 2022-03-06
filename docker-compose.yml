@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./build/node/Dockerfile
+    ports:
+      - 3000:3000
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /api
+    environment:
+      - DATABASE_URL="mysql://hdyvuser:hdyvpass@localhost:13306/hdyvdb"
+
+    #   #   - WORDPRESS_GRAPHQL_ENDPOINT=http://localhost:8080/graphql
+
+  db:
+    container_name: mysql
+    platform: linux/x86_64
+    image: mysql:5.7
+    ports:
+      - 13306:3306
+    restart: always
+    environment:
+      MYSQL_DATABASE: hdyvdb
+      MYSQL_USER: hdyvuser
+      MYSQL_PASSWORD: hdyvpass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      TZ: 'Asia/Tokyo'
+    volumes:
+      # - db:/var/lib/mysql
+      - ./build/db/my.cnf:/etc/my.cnf
+      - ./build/db/sql:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:5
+    ports:
+      - 8888:80
+    depends_on:
+      - db
+    restart: always
+    volumes:
+      - ./build/phpmyadmin/phpmyadmin-misc.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
+
+volumes:
+  wordpress:
+  db:
