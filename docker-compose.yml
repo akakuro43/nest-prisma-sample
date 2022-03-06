@@ -17,12 +17,10 @@ services:
     environment:
       - DATABASE_URL="mysql://hdyvuser:hdyvpass@localhost:13306/hdyvdb"
 
-    #   #   - WORDPRESS_GRAPHQL_ENDPOINT=http://localhost:8080/graphql
-
   db:
     container_name: mysql
     platform: linux/x86_64
-    image: mysql:5.7
+    image: mysql:8.0
     ports:
       - 13306:3306
     restart: always
@@ -30,10 +28,9 @@ services:
       MYSQL_DATABASE: hdyvdb
       MYSQL_USER: hdyvuser
       MYSQL_PASSWORD: hdyvpass
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_ROOT_PASSWORD: root
       TZ: 'Asia/Tokyo'
     volumes:
-      # - db:/var/lib/mysql
       - ./build/db/my.cnf:/etc/my.cnf
       - ./build/db/sql:/docker-entrypoint-initdb.d
 
